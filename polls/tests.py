@@ -108,4 +108,18 @@ class QuestionDetailViewTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
 
+class QuestionResultViewTests(TestCase):
+    def test_result_future_question(self):
+        """The result view of a future question should not be found"""
+        future_question = create_question(question_text="Future question", days=5)
+        url = reverse(viewname='polls:results', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_result_past_question(self):
+        """The result view of a past question should be found"""
+        past_question = create_question(question_text="Past question", days=-5)
+        url = reverse(viewname='polls:results', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question.question_text)
 
